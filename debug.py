@@ -134,7 +134,7 @@ class ExifMetadataViewer(QMainWindow):
             "",
             "Image Files (*.jpg *.jpeg *.png *.tiff *.bmp *.gif);;All Files (*)"
         )
-        print(file_path) #Debug: Print file path
+        
         if file_path:
             self.current_image_path = file_path
             self.display_image(file_path)

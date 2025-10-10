@@ -169,6 +169,8 @@ class ExifMetadataViewer(QMainWindow):
             with Image.open(file_path) as image:
                 exif_data = image._getexif()
                 
+                print(exif_data)  # Debug: print raw EXIF data to console
+
                 if exif_data is not None:
                     metadata_text = "EXIF Metadata:\n" + "="*50 + "\n\n"
                     

@@ -41,7 +41,14 @@ Model: Claude Sonnet 4.5 Preview (Agent Mode)
 [2025-10-11 11:27AM]
 Prompt: "Hello!!!!! I would like the image in the function 'create toolbar' to be dynamically moveable, and in the middle of the application"
 Model: GPT-4.0 (AGENT MODE)
+Platform: Visual Studio Code
 
 [2025-10-11 11:36AM]
 Prompt: "On line 281 in main.py explain and implement a fix to the error "not enough arguments core dumped" implement the fix, then make sure the logo is in the top middle, and make sure the load image button is on the right side above the metadata textbox. Thank you!"
 Model: GPT-5 (AGENT MODE)
+Platform: Visual Studio Code
+
+[2025-1011 11:47AM]
+Pronpt: " "
+Model: Clause Sonnet 4.5 Preview (Agent Mode)
+Platform: Visual Studio Code

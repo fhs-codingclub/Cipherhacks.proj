@@ -20,6 +20,7 @@ class ExifMetadataViewer(QMainWindow):
         super().__init__()
         self.current_image_path = None
         self._last_exif_data = None
+        self.logo_pixmap_original = None  # Cache original logo to avoid reloading
         self.init_ui()
         
     
@@ -126,23 +127,22 @@ class ExifMetadataViewer(QMainWindow):
         # Left spacer
         layout.addStretch(1)
 
-        # Logo label
+        # Logo label - load and cache the original pixmap once
         self.logo_label = QLabel()
-        pixmap = QPixmap("img/exifuscator_white.png")
-        if not pixmap.isNull():
-            # Scale logo to fit toolbar height
-            scaled = pixmap.scaledToHeight(max(24, self.toolbar.height() - 20), Qt.SmoothTransformation)
-            self.logo_label.setPixmap(scaled)
+        self.logo_pixmap_original = QPixmap("img/exifuscator_white.png")
+        
+        if not self.logo_pixmap_original.isNull():
+            # Initial scaling - will be adjusted on resize
+            self.update_logo_size()
         else:
             self.logo_label.setText("EXIF Viewer")
             self.logo_label.setStyleSheet("font-weight: bold; font-size: 14pt;")
+        
         self.logo_label.setAlignment(Qt.AlignCenter)
         layout.addWidget(self.logo_label)
 
         # Right spacer (pushes the load button to the far right)
         layout.addStretch(1)
-
-
 
         toolbar.addWidget(container)
 
@@ -276,15 +276,45 @@ class ExifMetadataViewer(QMainWindow):
         self._last_exif_data = None
 
     def resizeEvent(self, event):
+        """Handle window resize events safely."""
         super().resizeEvent(event)
-        # Dynamically scale logo on resize
-        if hasattr(self, 'logo_label') and hasattr(self, 'toolbar'):
-            pixmap = QPixmap("img/exifuscator_white.png")
-            if not pixmap.isNull():
-                scaled = pixmap.scaledToHeight(max(24, self.toolbar.height() - 8), Qt.SmoothTransformation)
-                self.logo_label.setPixmap(scaled)
+        
+        # Update logo size dynamically (safe with cached pixmap)
+        self.update_logo_size()
+        
+        # Update metadata divider if we have data
         if self._last_exif_data:
             self.update_metadata_display()
+    
+    def update_logo_size(self):
+        """
+        Update logo size based on toolbar height.
+        Adjust MAX_LOGO_HEIGHT and MIN_LOGO_HEIGHT to change logo size.
+        """
+        # Configuration - easy to edit
+        MAX_LOGO_HEIGHT = 40  # Maximum logo height in pixels
+        MIN_LOGO_HEIGHT = 24  # Minimum logo height in pixels
+        TOOLBAR_PADDING = 8   # Padding from toolbar edges
+        
+        # Safety checks
+        if not hasattr(self, 'logo_label'):
+            return
+        if not hasattr(self, 'toolbar'):
+            return
+        if self.logo_pixmap_original is None or self.logo_pixmap_original.isNull():
+            return
+        
+        try:
+            # Calculate logo height based on toolbar size
+            toolbar_height = self.toolbar.height()
+            logo_height = max(MIN_LOGO_HEIGHT, min(MAX_LOGO_HEIGHT, toolbar_height - TOOLBAR_PADDING))
+            
+            # Scale the cached pixmap
+            scaled = self.logo_pixmap_original.scaledToHeight(logo_height, Qt.SmoothTransformation)
+            self.logo_label.setPixmap(scaled)
+        except Exception as e:
+            # Silently handle any errors to prevent crashes
+            print(f"Logo resize error (non-critical): {e}")
     
     def show_about(self):
         """Show about dialog."""

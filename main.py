@@ -23,6 +23,7 @@ class ExifMetadataViewer(QMainWindow):
     def init_ui(self):
         """Initialize the user interface."""
         self.setWindowTitle("EXIF Metadata Viewer")
+
         self.setGeometry(100, 100, 1000, 700)
         
         # Create central widget and main layout
@@ -100,6 +101,10 @@ class ExifMetadataViewer(QMainWindow):
         self.clear_button.setEnabled(False)
         metadata_layout.addWidget(self.clear_button)
         
+        self.clear_button = QPushButton("Edit Metadata")
+        self.clear_button.clicked.connect(self.write_metadata)
+        self.clear_button.setEnabled(False)
+        metadata_layout.addWidget(self.clear_button)
         parent.addWidget(metadata_frame)
     
     def create_menu_bar(self):
@@ -193,6 +198,18 @@ class ExifMetadataViewer(QMainWindow):
             self.metadata_text.setPlainText(error_message)
             self.statusBar().showMessage("Error reading EXIF data")
     
+
+    def write_metadata(self, file_path):
+        try:
+            with Image.open(file_path) as image:
+                exif_data = image.getexif()
+
+                for tag_id, value in exif_data.items():
+                    exif_data[tag_id] = value
+                image.save(file_path, exif=exif_data)
+        except Exception as e:
+            print(f"Error writing EXIF data: {str(e)}")
+
     def clear_metadata(self):
         """Clear the metadata display and image."""
         self.metadata_text.setPlainText("Load an image to view its EXIF metadata")

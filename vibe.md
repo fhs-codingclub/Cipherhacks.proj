@@ -33,3 +33,8 @@ Prompt: "I don't see the logo panel showing anywhere in the app. Can you investi
 Model: Claude Sonnet 4 (Agent Mode)
 Platform: Visual Studio Code
 
+[2025-10-11 10:51AM]
+(prompt co authored by Erik)
+Prompt: "Hello Claude Sonnet 4.5, how's it going? The logo panel seems to be on it's own collumn, can we change it to be a header next to the File and Edit buttons? And can we move the 'Load Image' Button to the right side on the top and remove the 'EXIF Metadata' text?"
+Model: Claude Sonnet 4.5 Preview (Agent Mode)
+

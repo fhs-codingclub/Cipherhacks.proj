@@ -2,7 +2,7 @@ import sys
 import os
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout, 
                              QHBoxLayout, QPushButton, QLabel, QFileDialog, 
-                             QTextEdit, QScrollArea, QSplitter, QFrame)
+                             QTextEdit, QScrollArea, QSplitter, QFrame, QToolBar)
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap, QFont
 from PIL import Image
@@ -27,6 +27,12 @@ class ExifMetadataViewer(QMainWindow):
 
         self.setGeometry(100, 100, 1000, 700)
 
+        # Create menu bar first
+        self.create_menu_bar()
+        
+        # Create toolbar with logo and Load Image button
+        self.create_toolbar()
+
         # Create central widget and main layout
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
@@ -42,13 +48,8 @@ class ExifMetadataViewer(QMainWindow):
         # Right panel for metadata display
         self.setup_metadata_panel(main_splitter)
         
-        self.setup_logo_panel(main_splitter) 
-        
-        # Set splitter proportions (50% image, 30% metadata, 20% logo)
-        main_splitter.setSizes([500, 300, 200])
-        
-        # Create menu bar
-        self.create_menu_bar()
+        # Set splitter proportions (60% image, 40% metadata)
+        main_splitter.setSizes([600, 400])
         
         # Status bar
         self.statusBar().showMessage("Ready - Click 'Load Image' to begin")
@@ -58,13 +59,6 @@ class ExifMetadataViewer(QMainWindow):
         image_frame = QFrame()
         image_frame.setFrameStyle(QFrame.StyledPanel)
         image_layout = QVBoxLayout(image_frame)
-        
-        # Load image button
-        self.load_button = QPushButton("Load Image")
-        self.load_button.clicked.connect(self.load_image)
-        self.load_button.setMinimumHeight(40)
-        image_layout.addWidget(self.load_button)
-
 
         # Image display area with scroll
         self.image_scroll = QScrollArea()
@@ -80,44 +74,12 @@ class ExifMetadataViewer(QMainWindow):
         image_layout.addWidget(self.image_scroll)
 
         parent.addWidget(image_frame)
-        
-    def setup_logo_panel(self, parent):
-        # Create a small right-most panel to hold the logo
-        logo_frame = QFrame()
-        logo_frame.setFrameStyle(QFrame.StyledPanel)
-        logo_layout = QVBoxLayout(logo_frame)
-
-        pixmap = QPixmap("img/exifuscator_white.png")
-        logo_label = QLabel()
-        # If the pixmap loads, scale it down to a reasonable size for the panel
-        if not pixmap.isNull():
-            # Scale to fit panel width while maintaining aspect ratio
-            # Use smaller dimensions since the original is very wide (1657x352)
-            scaled = pixmap.scaled(180, 100, Qt.KeepAspectRatio, Qt.SmoothTransformation)
-            logo_label.setPixmap(scaled)
-        else:
-            logo_label.setText("Logo not found")
-
-        logo_label.setAlignment(Qt.AlignCenter)
-        logo_layout.addStretch()
-        logo_layout.addWidget(logo_label)
-        logo_layout.addStretch()
-
-        # Add the logo frame as a widget in the splitter so it becomes visible
-        parent.addWidget(logo_frame)
-
 
     def setup_metadata_panel(self, parent):
         """Setup the right panel for metadata display."""
         metadata_frame = QFrame()
         metadata_frame.setFrameStyle(QFrame.StyledPanel)
         metadata_layout = QVBoxLayout(metadata_frame)
-        
-        # Metadata title
-        metadata_title = QLabel("EXIF Metadata")
-        metadata_title.setFont(QFont("Arial", 12, QFont.Bold))
-        metadata_title.setAlignment(Qt.AlignCenter)
-        metadata_layout.addWidget(metadata_title)
         
         # Metadata display area
         self.metadata_text = QTextEdit()
@@ -137,6 +99,37 @@ class ExifMetadataViewer(QMainWindow):
         self.edit_button.setEnabled(False)
         metadata_layout.addWidget(self.edit_button)
         parent.addWidget(metadata_frame)
+    
+    def create_toolbar(self):
+        """Create toolbar with logo on left and Load Image button on right."""
+        toolbar = QToolBar()
+        toolbar.setMovable(False)
+        self.addToolBar(toolbar)
+        
+        # Add logo to toolbar
+        pixmap = QPixmap("img/exifuscator_white.png")
+        logo_label = QLabel()
+        if not pixmap.isNull():
+            # Scale logo to toolbar height (about 40px high)
+            scaled = pixmap.scaled(200, 40, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            logo_label.setPixmap(scaled)
+        else:
+            logo_label.setText("EXIF Viewer")
+            logo_label.setStyleSheet("font-weight: bold; font-size: 14pt;")
+        
+        logo_label.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+        toolbar.addWidget(logo_label)
+        
+        # Add spacer to push Load Image button to the right
+        spacer = QWidget()
+        spacer.setSizePolicy(QWidget().sizePolicy().Expanding, QWidget().sizePolicy().Preferred)
+        toolbar.addWidget(spacer)
+        
+        # Add Load Image button to the right side
+        self.load_button = QPushButton("Load Image")
+        self.load_button.clicked.connect(self.load_image)
+        self.load_button.setMinimumHeight(30)
+        toolbar.addWidget(self.load_button)
     
     def create_menu_bar(self):
         """Create the application menu bar."""

@@ -7,3 +7,6 @@
 <hr>
 A python GUI program to manage EXIF metadata in images and obfuscate values such as location coordinates and time. To protect users from hackers potentially trying to find their location, and cybersecurity reasons.
 <hr>
+
+Credits:
+<a href="github.com/ThatOnePers0n" target="_blank">@ThatOnePerson</a> for the logo

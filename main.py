@@ -88,6 +88,7 @@ class ExifMetadataViewer(QMainWindow):
         top_row.addStretch(1)
         self.load_button_meta = QPushButton("Load Image")
         self.load_button_meta.clicked.connect(self.load_image)
+       # load_button_meta.setAlignment(Qt.AlignCenter)
         top_row.addWidget(self.load_button_meta)
         metadata_layout.addLayout(top_row)
         

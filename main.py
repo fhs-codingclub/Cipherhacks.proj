@@ -27,9 +27,6 @@ class ExifMetadataViewer(QMainWindow):
         self.setWindowTitle("EXIF Metadata Viewer")
 
         self.setGeometry(100, 100, 1000, 700)
-        
-        global width 
-        width = self.width()
 
         # Create central widget and main layout
         central_widget = QWidget()

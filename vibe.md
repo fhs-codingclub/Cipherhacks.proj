@@ -10,6 +10,16 @@ Model: Claude Sonnet 4.0 (Agent Mode)
 
 [2025-10-10 3:14PM]
 Prompt: "Given the image, and it's metadata the application returns an empty dictionary. When it should be returning matadata specific to the image, like File Name, and image size. Offer a solution/solutions to the given problem, and explain how the implementation works."
-PLatform: Visual Studio Code
+Platform: Visual Studio Code
 Model: Claude Sonnet 4.0 (Agent Mode)
+
+[2025-10-10 8:54PM]
+Prompt: "Calling to an int, dividing width by 10, and then converting it to an int, and it starting at 1000, still shows when I plug in an image it states float image is not callable"
+Platform: WindSurf
+Model: GPT-5 (low reasoning)
+
+[2025-10-10 9:08PM]
+Prompt: "Hello Chatgpt! how is it going? Can you help with making the = scale with the window when it grows larger? Thank you!"
+Platform: WindSurf
+Model: GPT-5 (low reasoning)
 

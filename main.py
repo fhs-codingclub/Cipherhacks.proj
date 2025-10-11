@@ -292,7 +292,7 @@ class ExifMetadataViewer(QMainWindow):
         Adjust MAX_LOGO_HEIGHT and MIN_LOGO_HEIGHT to change logo size.
         """
         # Configuration - easy to edit
-        MAX_LOGO_HEIGHT = 200  # Maximum logo height in pixels
+        MAX_LOGO_HEIGHT = 200 / 3  # Maximum logo height in pixels
         MIN_LOGO_HEIGHT = 100  # Minimum logo height in pixels
         TOOLBAR_PADDING = 8   # Padding from toolbar edges
         

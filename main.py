@@ -126,7 +126,7 @@ class ExifMetadataViewer(QMainWindow):
         metadata_layout.addWidget(self.metadata_text)
         
         # Clear metadata button
-        self.clear_button = QPushButton("Clear Metadata")
+        self.clear_button = QPushButton("Clear Image")
         self.clear_button.clicked.connect(self.clear_metadata)
         self.clear_button.setEnabled(False)
         metadata_layout.addWidget(self.clear_button)

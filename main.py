@@ -166,8 +166,7 @@ class ExifMetadataViewer(QMainWindow):
         self.sun_button.mousePressEvent = lambda event: self.toggle_theme(False)
         layout.addWidget(self.sun_button)
 
-        # Right spacer
-        layout.addStretch(1)
+        layout.addStretch(1) # this was the bane of our existance, no one likes stretch
 
         toolbar.addWidget(container)
 

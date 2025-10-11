@@ -58,3 +58,8 @@ Platform: Visual Studio Code
 Prompt: "We have two preset images already for light mode and dark mode, they are respectively named, 'sun light.png' and 'dark mode mod.png', can you have the sun displayed on the right of the logo, the moon on the left, and have those be toggles for light and dark mode in the program?"
 Model: Claude Sonnet 4.5 Preview (Agent Mode)
 Platform: Visual Studio Code
+
+[2025-10-11 1:03PM]
+Prompt: "Can you help us upgrade our build.yml workflow for Github Actions from v3 which is outdated to v4?"
+Model: Claude Sonnet 4.5 Preview (Agent Mode)
+Platform: Visual Studio Code

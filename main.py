@@ -21,6 +21,14 @@ class ExifMetadataViewer(QMainWindow):
         self.current_image_path = None
         self._last_exif_data = None
         self.logo_pixmap_original = None  # Cache original logo to avoid reloading
+        self.dark_mode = True  # Start in dark mode
+        
+        # Cache theme icon pixmaps
+        self.moon_icon = QPixmap("img/dark mode mod.png")
+        self.sun_icon = QPixmap("img/sun light.png")
+        self.logo_dark = QPixmap("img/exifuscator_dark.png")
+        self.logo_white = QPixmap("img/exifuscator_white.png")
+        
         self.init_ui()
         
     
@@ -111,7 +119,7 @@ class ExifMetadataViewer(QMainWindow):
         parent.addWidget(metadata_frame)
     
     def create_toolbar(self):
-        """Create toolbar with a dynamically centered, moveable logo and Load Image button on right."""
+        """Create toolbar with theme toggles, centered logo, and Load Image button."""
         toolbar = QToolBar()
         toolbar.setMovable(False)
         self.addToolBar(toolbar)
@@ -122,14 +130,23 @@ class ExifMetadataViewer(QMainWindow):
         container = QWidget()
         layout = QHBoxLayout(container)
         layout.setContentsMargins(0, 0, 0, 0)
-        layout.setSpacing(0)
+        layout.setSpacing(10)
 
         # Left spacer
         layout.addStretch(1)
 
+        # Moon icon button (left of logo) - toggles to dark mode
+        self.moon_button = QLabel()
+        self.moon_button.setPixmap(self.moon_icon.scaledToHeight(30, Qt.SmoothTransformation))
+        self.moon_button.setCursor(Qt.PointingHandCursor)
+        self.moon_button.setToolTip("Switch to Dark Mode")
+        self.moon_button.mousePressEvent = lambda event: self.toggle_theme(True)
+        layout.addWidget(self.moon_button)
+
         # Logo label - load and cache the original pixmap once
         self.logo_label = QLabel()
-        self.logo_pixmap_original = QPixmap("img/exifuscator_white.png")
+        # Start with white logo (for dark mode)
+        self.logo_pixmap_original = self.logo_white
         
         if not self.logo_pixmap_original.isNull():
             # Initial scaling - will be adjusted on resize
@@ -141,7 +158,15 @@ class ExifMetadataViewer(QMainWindow):
         self.logo_label.setAlignment(Qt.AlignCenter)
         layout.addWidget(self.logo_label)
 
-        # Right spacer (pushes the load button to the far right)
+        # Sun icon button (right of logo) - toggles to light mode
+        self.sun_button = QLabel()
+        self.sun_button.setPixmap(self.sun_icon.scaledToHeight(30, Qt.SmoothTransformation))
+        self.sun_button.setCursor(Qt.PointingHandCursor)
+        self.sun_button.setToolTip("Switch to Light Mode")
+        self.sun_button.mousePressEvent = lambda event: self.toggle_theme(False)
+        layout.addWidget(self.sun_button)
+
+        # Right spacer
         layout.addStretch(1)
 
         toolbar.addWidget(container)
@@ -169,6 +194,54 @@ class ExifMetadataViewer(QMainWindow):
         help_menu = menubar.addMenu('Help')
         about_action = help_menu.addAction('About')
         about_action.triggered.connect(self.show_about)
+    
+    def toggle_theme(self, to_dark_mode):
+        """
+        Toggle between light and dark mode.
+        
+        Args:
+            to_dark_mode (bool): True to switch to dark mode, False for light mode
+        """
+        # Only toggle if we're changing modes
+        if self.dark_mode == to_dark_mode:
+            return
+        
+        self.dark_mode = to_dark_mode
+        
+        # Get the application instance
+        app = QApplication.instance()
+        
+        if self.dark_mode:
+            # Apply dark theme
+            try:
+                import qdarkstyle
+                app.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
+            except ImportError:
+                # Fallback to a simple dark style if qdarkstyle not available
+                app.setStyleSheet("""
+                    QMainWindow, QWidget {
+                        background-color: #2b2b2b;
+                        color: #ffffff;
+                    }
+                    QTextEdit, QScrollArea {
+                        background-color: #1e1e1e;
+                        color: #ffffff;
+                    }
+                """)
+            # Use white logo for dark mode
+            self.logo_pixmap_original = self.logo_white
+        else:
+            # Apply light theme (default Qt style)
+            app.setStyleSheet("")
+            # Use dark logo for light mode
+            self.logo_pixmap_original = self.logo_dark
+        
+        # Update logo display
+        self.update_logo_size()
+        
+        # Update status message
+        mode_name = "Dark Mode" if self.dark_mode else "Light Mode"
+        self.statusBar().showMessage(f"Switched to {mode_name}")
     
     def load_image(self):
         """Load and display an image, then extract its EXIF metadata."""

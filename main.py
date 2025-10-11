@@ -41,6 +41,7 @@ class ExifMetadataViewer(QMainWindow):
         
         # Right panel for metadata display
         self.setup_metadata_panel(main_splitter)
+        self.setup_logo_panel(main_splitter)
         
         # Set splitter proportions (60% image, 40% metadata)
         main_splitter.setSizes([600, 400])
@@ -79,7 +80,13 @@ class ExifMetadataViewer(QMainWindow):
 
         parent.addWidget(image_frame)
         
-    
+    def setup_logo_panel(self, parent):
+        pixmap = QPixmap("img/exifuscator_white.png")
+        logo_label = QLabel()
+        logo_label.setPixmap(pixmap)
+        logo_label.setAlignment(Qt.AlignCenter)
+
+
     def setup_metadata_panel(self, parent):
         """Setup the right panel for metadata display."""
         metadata_frame = QFrame()

@@ -132,8 +132,7 @@ class ExifMetadataViewer(QMainWindow):
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(10)
 
-        # Left spacer
-        layout.addStretch(1)
+        layout.addStretch(1) # this was the bane of our existance, no one likes stretch
 
         # Moon icon button (left of logo) - toggles to dark mode
         self.moon_button = QLabel()
@@ -155,7 +154,7 @@ class ExifMetadataViewer(QMainWindow):
             self.logo_label.setText("EXIFfuscator")
             self.logo_label.setStyleSheet("font-weight: bold; font-size: 14pt;")
         
-        self.logo_label.setAlignment(Qt.AlignCenter)
+        self.logo_label.setAlignment(Qt.AlignCenter) # obscure ahh function
         layout.addWidget(self.logo_label)
 
         # Sun icon button (right of logo) - toggles to light mode

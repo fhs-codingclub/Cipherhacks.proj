@@ -27,7 +27,6 @@ class ExifMetadataViewer(QMainWindow):
         """Initialize the user interface."""
         self.setWindowTitle("EXIFbuscator")
         self.setWindowIcon(QIcon('img/favicon.png'))
-        self.setWindowIcon(QApplication('img/favicon.png'))
         self.setGeometry(100, 100, 1000, 700)
 
         # Create menu bar first

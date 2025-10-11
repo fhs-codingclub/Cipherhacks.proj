@@ -18,6 +18,7 @@ class ExifMetadataViewer(QMainWindow):
     def __init__(self):
         super().__init__()
         self.current_image_path = None
+        self._last_exif_data = None
         self.init_ui()
     
     def init_ui(self):
@@ -25,6 +26,9 @@ class ExifMetadataViewer(QMainWindow):
         self.setWindowTitle("EXIF Metadata Viewer")
         self.setGeometry(100, 100, 1000, 700)
         
+        global width 
+        width = self.width()
+
         # Create central widget and main layout
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
@@ -172,15 +176,8 @@ class ExifMetadataViewer(QMainWindow):
                 print(exif_data)  # Debug: print raw EXIF data to console
 
                 if exif_data is not None:
-                    metadata_text = "EXIF Metadata:\n" + "="*50 + "\n\n"
-
-
-                    # Convert EXIF data to readable format
-                    for tag_id, value in exif_data.items():
-                        tag_name = TAGS.get(tag_id, tag_id)
-                        metadata_text += f"{tag_name}: {value}\n"
-                    
-                    self.metadata_text.setPlainText(metadata_text)
+                    self._last_exif_data = dict(exif_data)
+                    self.update_metadata_display()
                 else:
                     self.metadata_text.setPlainText("No EXIF metadata found in this image.")
                     
@@ -192,6 +189,16 @@ class ExifMetadataViewer(QMainWindow):
             error_message += "- Image has no EXIF data"
             self.metadata_text.setPlainText(error_message)
             self.statusBar().showMessage("Error reading EXIF data")
+
+    def update_metadata_display(self):
+        if self._last_exif_data:
+            divider = "=" * int(self.width() * 0.045)
+            text = "EXIF Metadata:\n" + divider + "\n\n"
+            for tag_id, value in self._last_exif_data.items():
+                tag_name = TAGS.get(tag_id, tag_id)
+                text += f"{tag_name}: {value}\n"
+            print(text)
+            self.metadata_text.setPlainText(text)
     
     def clear_metadata(self):
         """Clear the metadata display and image."""
@@ -202,6 +209,12 @@ class ExifMetadataViewer(QMainWindow):
         self.current_image_path = None
         self.clear_button.setEnabled(False)
         self.statusBar().showMessage("Ready - Click 'Load Image' to begin")
+        self._last_exif_data = None
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        if self._last_exif_data:
+            self.update_metadata_display()
     
     def show_about(self):
         """Show about dialog."""

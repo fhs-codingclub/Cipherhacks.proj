@@ -10,3 +10,5 @@ A python GUI program to manage EXIF metadata in images and obfuscate values such
 
 Credits:
 <a href="https://github.com/ThatOnePers0n" target="_blank">@ThatOnePers0n</a> for the logo
+
+<footer>Ai was used in the making of this program</footer>

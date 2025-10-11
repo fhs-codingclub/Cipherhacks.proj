@@ -38,3 +38,10 @@ Platform: Visual Studio Code
 Prompt: "Hello Claude Sonnet 4.5, how's it going? The logo panel seems to be on it's own collumn, can we change it to be a header next to the File and Edit buttons? And can we move the 'Load Image' Button to the right side on the top and remove the 'EXIF Metadata' text?"
 Model: Claude Sonnet 4.5 Preview (Agent Mode)
 
+[2025-10-11 11:27AM]
+Prompt: "Hello!!!!! I would like the image in the function 'create toolbar' to be dynamically moveable, and in the middle of the application"
+Model: GPT-4.0 (AGENT MODE)
+
+[2025-10-11 11:36AM]
+Prompt: "On line 281 in main.py explain and implement a fix to the error "not enough arguments core dumped" implement the fix, then make sure the logo is in the top middle, and make sure the load image button is on the right side above the metadata textbox. Thank you!"
+Model: GPT-5 (AGENT MODE)

@@ -2,6 +2,8 @@ import sys
 import os
 import random
 import string
+import piexif
+import sqlite3
 
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout, 
                              QHBoxLayout, QPushButton, QLabel, QFileDialog, 
@@ -291,13 +293,22 @@ class ExifMetadataViewer(QMainWindow):
                     315: 'Artist',  # Artist name
                     33432: 'Copyright'  # Copyright info
                 }
+                
+                make, model = self.get_random_camera()
+                software = self.get_random_software()
 
                 #Randomize common exif tags
                 for tag_id, tag_name in common_tags.items():
                     if tag_id in exif:
                         #Generate random data based on tag type
 
-                        if tag_id == 306: #DateTime
+                        if tag_id == 271: #Make
+                            exif[tag_id] = make or "Unknown"
+                        elif tag_id == 272: #Model
+                            exif[tag_id] = model or "Unknown"
+                        elif tag_id == 305: #Software
+                            exif[tag_id] = software or "Unknown"
+                        elif tag_id == 306: #DateTime
                             year = random.randint(2000, 2025)
                             month = random.randint(1, 12)
                             day = random.randint(1, 28)
@@ -310,18 +321,52 @@ class ExifMetadataViewer(QMainWindow):
                             exif[tag_id] = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
                         
                         #save the image with modified exif data
-                        img.save(self.current_image_path, exif=exif)
+                img.save(self.current_image_path, exif=exif)
 
-                        #update display
-                        self.extract_and_display_metadata(self.current_image_path)
-                        self.statusBar().showMessage("Metadata randomized successfully")
-
-
-
+                #update display
+                self.extract_and_display_metadata(self.current_image_path)
+                self.statusBar().showMessage("Metadata randomized successfully")
+        
         except Exception as e:
             self.statusBar().showMessage(f"Error reading EXIF data: {str(e)}")
-                    
-            
+
+    def get_random_camera(self):
+        """Get a random camera from the database."""
+        conn = sqlite3.connect('metadata.db')
+        cursor = conn.cursor()
+
+        cursor.execute("SELECT name FROM makes ORDER BY RANDOM() LIMIT 1")
+        row = cursor.fetchone()
+        if not row:
+            conn.close()
+            return None, None
+        make = row[0]
+
+        cursor.execute(
+            "SELECT name FROM models WHERE make_id = (SELECT id FROM makes WHERE name = ?) ORDER BY RANDOM() LIMIT 1",
+            (make,)
+        )
+        row = cursor.fetchone()
+        model = row[0] if row else "Unknown"
+
+        conn.close()
+        return make, model          
+
+    def get_random_software(self):
+        """Get a random software from the database."""
+        conn = sqlite3.connect('metadata.db')
+        cursor = conn.cursor()
+
+        cursor.execute("SELECT name FROM software ORDER BY RANDOM() LIMIT 1")
+        row = cursor.fetchone()
+        if not row:
+            conn.close()
+            return None
+        software = row[0]
+
+        conn.close()
+        return software
+        
     def display_image(self, file_path):
         """Display the selected image in the image panel."""
         try:

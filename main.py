@@ -465,12 +465,15 @@ class ExifMetadataViewer(QMainWindow):
         if save_path:
             try:
                 with Image.open(self.current_image_path) as img:
-                    # Create a new exif object from the modified data
-                    exif_bytes = img.info.get('exif', b'')
+                    # Get the existing exif object from the image
+                    exif = img.getexif()
                     
-                    # Save with the modified EXIF data
-                    # For formats that support EXIF, we can pass it directly
-                    img.save(save_path, exif=self._last_exif_data)
+                    # Update it with our modified data
+                    for tag_id, value in self._last_exif_data.items():
+                        exif[tag_id] = value
+                    
+                    # Save the image with the updated EXIF data
+                    img.save(save_path, exif=exif)
                     
                 self.statusBar().showMessage(f"Image saved successfully to: {os.path.basename(save_path)}")
             except Exception as e:

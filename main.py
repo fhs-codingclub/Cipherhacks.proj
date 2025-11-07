@@ -1,8 +1,12 @@
 import sys
 import os
+import random
+import string
+
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout, 
                              QHBoxLayout, QPushButton, QLabel, QFileDialog, 
                              QTextEdit, QScrollArea, QSplitter, QFrame, QToolBar)
+
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPixmap, QFont, QIcon
 from PyQt5 import QtGui
@@ -91,13 +95,20 @@ class ExifMetadataViewer(QMainWindow):
         metadata_frame = QFrame()
         metadata_frame.setFrameStyle(QFrame.StyledPanel)
         metadata_layout = QVBoxLayout(metadata_frame)
-        # Top row with Load Image button aligned to the right
+        
+        # Top row with Load Image button aligned to the left
         top_row = QHBoxLayout()
         self.load_button_meta = QPushButton("Load Image")
         self.load_button_meta.clicked.connect(self.load_image)
         top_row.addWidget(self.load_button_meta)
         top_row.setAlignment(Qt.AlignLeft)
         metadata_layout.addLayout(top_row)
+
+        #Top row with Randomize button aligned to the right
+        top_row.addStretch()
+        self.load_button_meta = QPushButton("Randomize")
+        self.load_button_meta.clicked.connect(self.randomize_metadata)
+        top_row.addWidget(self.load_button_meta, alignment=Qt.AlignRight)
         
         # Metadata display area
         self.metadata_text = QTextEdit()
@@ -260,6 +271,57 @@ class ExifMetadataViewer(QMainWindow):
             self.edit_button.setEnabled(True)
             self.statusBar().showMessage(f"Loaded: {os.path.basename(file_path)}")
     
+    def randomize_metadata(self):
+        """Randomize the EXIF metadata of the current image."""
+        
+        if not self.current_image_path:
+            return
+
+        try:
+            with Image.open(self.current_image_path) as img:
+                #Get existing Exif Metadata
+                exif = img.getexif() or {}
+
+                #Common Exif tags (used for randomization later)
+                common_tags = {
+                    271: 'Make',  # Camera manufacturer
+                    272: 'Model',  # Camera model
+                    305: 'Software',  # Software used
+                    306: 'DateTime',  # Date and time
+                    315: 'Artist',  # Artist name
+                    33432: 'Copyright'  # Copyright info
+                }
+
+                #Randomize common exif tags
+                for tag_id, tag_name in common_tags.items():
+                    if tag_id in exif:
+                        #Generate random data based on tag type
+
+                        if tag_id == 306: #DateTime
+                            year = random.randint(2000, 2025)
+                            month = random.randint(1, 12)
+                            day = random.randint(1, 28)
+                            hour = random.randint(0, 23)
+                            minute = random.randint(0, 59)
+                            second = random.randint(0, 59)
+                            exif[tag_id] = f"{year}:{month:02d}:{day:02d} {hour:02d}:{minute:02d}:{second:02d}"
+                        else:
+                            #for other text fields generate random string
+                            exif[tag_id] = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
+                        
+                        #save the image with modified exif data
+                        img.save(self.current_image_path, exif=exif)
+
+                        #update display
+                        self.extract_and_display_metadata(self.current_image_path)
+                        self.statusBar().showMessage("Metadata randomized successfully")
+
+
+
+        except Exception as e:
+            self.statusBar().showMessage(f"Error reading EXIF data: {str(e)}")
+                    
+            
     def display_image(self, file_path):
         """Display the selected image in the image panel."""
         try:
@@ -320,7 +382,6 @@ class ExifMetadataViewer(QMainWindow):
             print(text)
             self.metadata_text.setPlainText(text)
     
-
     def write_metadata(self, _=None):
         if not self.current_image_path:
             return
